@@ -10,7 +10,7 @@ This document outlines the step-by-step process for investing in Vanilla Bonds u
 ## Step 1: Approve Token Allowance
 
 1. Open your Ethereum wallet and navigate to the "Assets" or "Tokens" section.
-2. Find the Vanilla Bond Token (e.g., MYT) and select it.
+2. Find the Vanilla Bond Token (e.g., NEITEC) and select it.
 3. Locate the "Approve" or "Allowance" option and provide the contract address for Vanilla Bond.
 4. Set the allowance amount to the desired investment amount.
 
