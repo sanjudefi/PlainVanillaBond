@@ -5,7 +5,7 @@ This document outlines the step-by-step process for investing in Vanilla Bonds u
 ## Prerequisites
 
 - Ethereum wallet (e.g., MetaMask) connected to the desired network (e.g., Goerli testnet)
-- Tokens: Ensure you have the required tokens (e.g., MYT tokens) for investment.
+- Tokens: Ensure you have the required tokens (e.g., NEITEC tokens) for investment.
 
 ## Step 1: Approve Token Allowance
 
@@ -37,10 +37,5 @@ This document outlines the step-by-step process for investing in Vanilla Bonds u
 5. Confirm the transaction and wait for the transaction to be processed and confirmed.
 6. The settlement process will transfer any remaining coupon payments and the principal amount to your wallet.
 
-## Disclaimer
 
-- The Vanilla Bond investment process may vary depending on the specific implementation of the smart contract and requirements set by the bond issuer.
-- Ensure to follow the bond issuer's instructions and comply with any regulatory requirements.
-- This document provides a general overview and should not be considered as financial or investment advice.
-- Perform your own due diligence and assess the risks associated with bond investments before making any decisions.
 
