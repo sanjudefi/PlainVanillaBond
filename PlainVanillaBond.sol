@@ -21,8 +21,8 @@ contract PlainVanillaBond {
 
     constructor(address tokenAddress) {
         bond.couponRate = 5; // 5% coupon rate
-        bond.maturity = block.timestamp + 3 hours; // Maturity in 3 hours
-        bond.couponFrequency = 1 hours; // Coupon payment every 1 hour
+        bond.maturity = block.timestamp + 10 minutes; // Maturity in 10 minutes
+        bond.couponFrequency = 10 minutes; // Coupon payment every 10 minutes
         bond.issuer = msg.sender; // Issuer's address
         bondToken = MyToken(tokenAddress);
     }
@@ -64,25 +64,7 @@ contract PlainVanillaBond {
         bond.highRiskCustomers[customer] = false;
     }
 
-    /*function invest(uint256 amount) external {
-        require(bond.whitelist[msg.sender], "Only whitelisted investors can invest.");
-        require(amount > 0, "Investment amount must be greater than zero.");
 
-        // Check investor's token balance
-        uint256 tokenBalance = bondToken.balanceOf(msg.sender);
-        require(tokenBalance >= amount, "Insufficient token balance.");
-
-        // Check investor's token allowance
-        uint256 tokenAllowance = bondToken.allowance(msg.sender, address(this));
-        require(tokenAllowance >= amount, "Insufficient token allowance.");
-
-        // Transfer the tokens from the investor to the contract
-        bool transferSuccess = bondToken.transferFrom(msg.sender, address(this), amount);
-        require(transferSuccess, "Token transfer failed.");
-
-        // Update the invested amount for the investor
-        bond.investedAmounts[msg.sender] += amount;
-    }*/
 
     function invest(uint256 amount) external onlyWhitelisted {
         require(amount > 0, "Investment amount must be greater than zero.");
@@ -134,20 +116,20 @@ contract PlainVanillaBond {
         bond.couponPayments[msg.sender] = 0;
     }
 
-    function settleBond() external onlyWhitelisted {
-        require(block.timestamp >= bond.maturity, "Bond has not yet matured.");
+   function settleBond() external onlyWhitelisted {
+    require(block.timestamp >= bond.maturity, "Bond has not yet matured.");
 
-        // Perform settlement logic here
-        uint256 couponPayment = bond.couponPayments[msg.sender];
-        uint256 principalAmount = bond.investedAmounts[msg.sender];
+    // Perform settlement logic here
+    uint256 couponPayment = (bond.investedAmounts[msg.sender] * bond.couponRate) / 100;
+    uint256 principalAmount = bond.investedAmounts[msg.sender];
 
-        require(couponPayment + principalAmount > 0, "No funds available for settlement.");
+    require(couponPayment + principalAmount > 0, "No funds available for settlement.");
 
-        // Transfer the coupon payment and principal amount to the investor
-        bondToken.transfer(msg.sender, couponPayment + principalAmount);
+    // Transfer the coupon payment and principal amount to the investor
+    bondToken.transfer(msg.sender, couponPayment + principalAmount);
 
-        // Reset invested amount and coupon payment for the investor
-        bond.investedAmounts[msg.sender] = 0;
-        bond.couponPayments[msg.sender] = 0;
+    // Reset invested amount and coupon payment for the investor
+    bond.investedAmounts[msg.sender] = 0;
+    bond.couponPayments[msg.sender] = 0;
     }
 }
