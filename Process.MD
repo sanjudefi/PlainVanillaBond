@@ -28,15 +28,7 @@ This document outlines the step-by-step process for investing in Vanilla Bonds u
 3. Locate the "Invest" function and enter the desired investment amount in tokens.
 4. Confirm the transaction and wait for the transaction to be processed and confirmed.
 
-## Step 4: Coupon Payments and Principal Repayment
-
-1. After the investment is made, you become eligible to receive coupon payments and participate in the bond's lifecycle.
-2. The bond contract will automatically calculate and distribute coupon payments at the specified coupon frequency.
-3. Monitor your wallet for incoming coupon payments, which will be in the form of the bond's token (e.g., MYT tokens).
-4. At the bond's maturity, the contract will facilitate the repayment of the principal amount to the investors.
-5. Keep track of the maturity date and expect to receive the principal amount in your wallet.
-
-## Step 5: Settle Bond
+## Step 4: Settle Bond
 
 1. After the bond has reached its maturity date, you can settle your bond investment.
 2. Open your Ethereum wallet and navigate to the "DApps" or "Browser" section.
