@@ -31,13 +31,3 @@ The contract is structured as follows:
 8. At bond maturity, the principal amount will be repaid to the investors.
 9. Investors can settle the bond to receive both the coupon payments and the principal amount.
 
-## Development
-
-To set up the development environment and run tests:
-
-1. Install the required dependencies using `npm install`.
-2. Run the tests using `npm test`.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
