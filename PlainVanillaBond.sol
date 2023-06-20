@@ -13,6 +13,7 @@ contract PlainVanillaBond {
         mapping(address => bool) kycApproved;
         mapping(address => bool) highRiskCustomers;
         mapping(address => uint256) couponPayments;
+        mapping(address => uint256) investedAmounts;
     }
 
     Bond public bond;
@@ -20,15 +21,14 @@ contract PlainVanillaBond {
 
     constructor(address tokenAddress) {
         bond.couponRate = 5; // 5% coupon rate
-        bond.maturity = block.timestamp + 2 years; // Maturity in 2 years
-        bond.couponFrequency = 6 months; // Coupon payment every 6 months
+        bond.maturity = block.timestamp + 3 hours; // Maturity in 3 hours
+        bond.couponFrequency = 1 hours; // Coupon payment every 1 hour
         bond.issuer = msg.sender; // Issuer's address
-
         bondToken = MyToken(tokenAddress);
     }
 
     modifier onlyWhitelisted() {
-        require(bond.whitelist[msg.sender], "You are not allowed to perform this action.");
+        require(bond.whitelist[msg.sender], "Only whitelisted investors can perform this action.");
         require(bond.kycApproved[msg.sender], "KYC not approved.");
         require(!bond.highRiskCustomers[msg.sender], "High-risk customers are not allowed.");
         _;
@@ -64,12 +64,55 @@ contract PlainVanillaBond {
         bond.highRiskCustomers[customer] = false;
     }
 
+    /*function invest(uint256 amount) external {
+        require(bond.whitelist[msg.sender], "Only whitelisted investors can invest.");
+        require(amount > 0, "Investment amount must be greater than zero.");
+
+        // Check investor's token balance
+        uint256 tokenBalance = bondToken.balanceOf(msg.sender);
+        require(tokenBalance >= amount, "Insufficient token balance.");
+
+        // Check investor's token allowance
+        uint256 tokenAllowance = bondToken.allowance(msg.sender, address(this));
+        require(tokenAllowance >= amount, "Insufficient token allowance.");
+
+        // Transfer the tokens from the investor to the contract
+        bool transferSuccess = bondToken.transferFrom(msg.sender, address(this), amount);
+        require(transferSuccess, "Token transfer failed.");
+
+        // Update the invested amount for the investor
+        bond.investedAmounts[msg.sender] += amount;
+    }*/
+
+    function invest(uint256 amount) external onlyWhitelisted {
+        require(amount > 0, "Investment amount must be greater than zero.");
+
+        // Check investor's token balance
+        uint256 tokenBalance = bondToken.balanceOf(msg.sender);
+        require(tokenBalance >= amount, "Insufficient token balance.");
+
+        // Approve the transfer from the investor's address to the contract address
+        bool approvalSuccess = bondToken.approve(address(this), amount);
+        require(approvalSuccess, "Token transfer approval failed.");
+
+        // Transfer the tokens from the investor to the contract
+        bool transferSuccess = bondToken.transferFrom(msg.sender, address(this), amount);
+        require(transferSuccess, "Token transfer failed.");
+
+        // Update the invested amount for the investor
+        bond.investedAmounts[msg.sender] += amount;
+    }
+
+
+    function getInvestedAmount(address investor) external view returns (uint256) {
+        return bond.investedAmounts[investor];
+    }
     function payCoupon() external onlyWhitelisted {
         require(block.timestamp < bond.maturity, "Bond has already matured.");
         require(block.timestamp % bond.couponFrequency == 0, "Not a coupon payment date.");
 
         // Perform coupon payment logic here
-        uint256 couponAmount = (bondToken.balanceOf(address(this)) * bond.couponRate) / 100;
+        uint256 couponAmount = (bond.investedAmounts[msg.sender] * bond.couponRate) / 100;
         require(couponAmount > 0, "Coupon amount is zero.");
 
         // Update coupon payment for the investor
@@ -80,11 +123,15 @@ contract PlainVanillaBond {
         require(block.timestamp >= bond.maturity, "Bond has not yet matured.");
 
         // Perform principal repayment logic here
-        uint256 principalAmount = bondToken.balanceOf(address(this));
+        uint256 principalAmount = bond.investedAmounts[msg.sender];
         require(principalAmount > 0, "Principal amount is zero.");
 
         // Transfer the principal amount to the investor
         bondToken.transfer(msg.sender, principalAmount);
+
+        // Reset invested amount and coupon payment for the investor
+        bond.investedAmounts[msg.sender] = 0;
+        bond.couponPayments[msg.sender] = 0;
     }
 
     function settleBond() external onlyWhitelisted {
@@ -92,14 +139,15 @@ contract PlainVanillaBond {
 
         // Perform settlement logic here
         uint256 couponPayment = bond.couponPayments[msg.sender];
-        uint256 principalAmount = bondToken.balanceOf(address(this));
+        uint256 principalAmount = bond.investedAmounts[msg.sender];
 
         require(couponPayment + principalAmount > 0, "No funds available for settlement.");
 
         // Transfer the coupon payment and principal amount to the investor
         bondToken.transfer(msg.sender, couponPayment + principalAmount);
 
-        // Reset coupon payment for the investor
+        // Reset invested amount and coupon payment for the investor
+        bond.investedAmounts[msg.sender] = 0;
         bond.couponPayments[msg.sender] = 0;
     }
 }
